@@ -51,7 +51,31 @@ def hill_climbing(func, bounds, iterations=1000, epsilon=1e-6):
 
 # Random Local Search
 def random_local_search(func, bounds, iterations=1000, epsilon=1e-6):
-    pass
+    # Кількість параметрів
+    n = len(bounds)
+
+    # Випадкова початкова точка у межах bounds
+    current_point = [random.uniform(bounds[i][0], bounds[i][1]) for i in range(n)]
+    current_value = func(current_point)
+
+    for _ in range(iterations):
+        # Генеруємо випадкового сусіда в межах області
+        neighbor = [current_point[i] + random.uniform(-0.1, 0.1) for i in range(n)]
+        for i in range(n):
+            neighbor[i] = min(max(neighbor[i], bounds[i][0]), bounds[i][1])
+        
+        value = func(neighbor)
+
+        # Якщо є покращення — переходимо до нового сусіда
+        if value < current_value:
+            current_point, current_value = neighbor, value
+
+        # Перевіряємо зупинку за умовою точності
+        if abs(current_value - value) < epsilon:
+            break
+
+    return current_point, current_value
+
 
 
 # Simulated Annealing

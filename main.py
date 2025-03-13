@@ -82,7 +82,33 @@ def random_local_search(func, bounds, iterations=1000, epsilon=1e-6):
 def simulated_annealing(
     func, bounds, iterations=1000, temp=1000, cooling_rate=0.95, epsilon=1e-6
 ):
-    pass
+    # Кількість параметрів
+    n = len(bounds)
+
+    # Випадкова початкова точка у межах bounds
+    current_point = [random.uniform(bounds[i][0], bounds[i][1]) for i in range(n)]
+    current_value = func(current_point)
+
+    for _ in range(iterations):
+        # Генеруємо сусіда
+        neighbor = [current_point[i] + random.uniform(-0.1, 0.1) for i in range(n)]
+        for i in range(n):
+            neighbor[i] = min(max(neighbor[i], bounds[i][0]), bounds[i][1])
+
+        value = func(neighbor)
+        delta = value - current_value
+
+        if delta < 0 or random.random() < math.exp(-delta / temp):
+            current_point, current_value = neighbor, value
+
+        # Зменшуємо температуру
+        temp *= cooling_rate
+
+        # Перевірка зупинки за умовою точності або температури
+        if temp < epsilon or abs(delta) < epsilon:
+            break
+
+    return current_point, current_value
 
 
 if __name__ == "__main__":
